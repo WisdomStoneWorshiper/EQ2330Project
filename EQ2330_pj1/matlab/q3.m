@@ -23,13 +23,28 @@ F_spectra = log(abs(F));
 G = fft2(g);
 G = fftshift(G);
 G_spectra = log(abs(G));
+% g = imread("../images/boats512_outoffocus.bmp");
+% g = im2double(g);
+f_hat = wiener_filter(g, h, 0.0833);
 
-imagesc((F_spectra));
-colormap gray(256);
-figure, imagesc(G_spectra);
-colormap gray(256);
-
-% imagesc(f);
+% imagesc((F_spectra));
 % colormap gray(256);
+% figure, imagesc(G_spectra);
+% colormap gray(256);
+% % figure, imagesc(f);
+% % colormap gray(256);
 % figure, imagesc(g);
 % colormap gray(256);
+% figure, imagesc(f_hat);
+% colormap gray(256);
+
+figure(4);
+subplot(2,2,1);
+imagesc((F_spectra));
+subplot(2,2,2);
+imagesc(G_spectra);
+subplot(2,2,3);
+imagesc(g);
+subplot(2,2,4);
+imagesc(f_hat);
+colormap gray(256);
