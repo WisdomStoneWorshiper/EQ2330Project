@@ -25,8 +25,18 @@ median_saltp = medfilt2(saltp_lena);
 %hist_med_g = histogram(median_g);
 %hist_med_saltp = histogram(median_saltp);
 
-% Display histogram
+% Display original image and its histogram
 figure(1);
+subplot(1,2,1);
+imagesc(lena_o,[0 255]);
+subplot(1,2,2);
+histogram(double(lena_o));
+xlabel('r');
+ylabel('h(r)');
+axis([0 255 0 inf]);
+
+% Display histogram
+figure(2);
 subplot(2,3,1);
 histogram(g_lena);
 xlabel('r');
@@ -65,7 +75,7 @@ title('salt&pepper noise image after median filter');
 axis([0 255 0 inf]);
 
 % Display the 'Lena' image
-figure(2);
+figure(3);
 subplot(2,3,1);
 imagesc(g_lena,[0 255]);
 title('gaussian noise image');
