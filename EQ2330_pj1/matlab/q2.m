@@ -1,8 +1,7 @@
 %%%2.2-1
 lena_o = imread('lena512.bmp');
 g_noise = mynoisegen('gaussian', 512, 512, 0, 64);
-double_lena_o = double(lena_o);
-g_lena = g_noise+double_lena_o; % lena with gaussian noise
+g_lena = g_noise+double(lena_o); % lena with gaussian noise
 saltp_lena = lena_o; %lena with saltpepper noise
 saltp_n = mynoisegen('saltpepper', 512, 512, .05, .05);
 saltp_lena(saltp_n==0) = 0;
@@ -16,8 +15,6 @@ hist_saltp = histogram(double(saltp_lena));
 mean_filter = [1/9 1/9 1/9; 1/9 1/9 1/9; 1/9 1/9 1/9];
 mean_g = conv2(mean_filter,g_lena);
 mean_saltp = conv2(mean_filter, saltp_lena);
-%imwrite(mean_g, 'mean_g.jpeg', 'jpeg');
-%imwrite(mean_saltp, 'mean_saltp.jpeg', 'jpeg');
 hist_mean_g = histogram(mean_g);
 hist_mean_saltp = histogram(mean_saltp);
 
