@@ -1,13 +1,14 @@
-f = imread("../images/lena512.bmp");
+f = imread("../images/lena512.bmp"); % load an image
 
-r = 8; % from the instruction
-h = myblurgen('gaussian', r);
-g = conv2(f, h, 'same');
-[x_max, y_max] = size(g);
+r = 8; % Gaussian kernel radius from the instruction
+h = myblurgen('gaussian', r); % use gaussian blur to blur the image
+g = conv2(f, h, 'same'); % make sure the output image size is same as the input image size
+[M, N] = size(g);
 
-for i = 1:x_max
+% apply the quantization noise
+for i = 1:M
 
-    for j = 1:y_max
+    for j = 1:N
         g(i, j) = min([max([g(i, j), 0]), 255]);
     end
 
@@ -17,34 +18,27 @@ f = im2double(f);
 g = im2double(g);
 
 F = fft2(f);
-F = fftshift(F);
-F_spectra = log(abs(F));
+F = fftshift(F); % center the spectra
+F_spectra = log(abs(F)); % take the log value for visualization purpose
 
 G = fft2(g);
 G = fftshift(G);
 G_spectra = log(abs(G));
-% g = imread("../images/boats512_outoffocus.bmp");
-% g = im2double(g);
-f_hat = wiener_filter(g, h, 0.0833);
 
-% imagesc((F_spectra));
-% colormap gray(256);
-% figure, imagesc(G_spectra);
-% colormap gray(256);
-% % figure, imagesc(f);
-% % colormap gray(256);
-% figure, imagesc(g);
-% colormap gray(256);
-% figure, imagesc(f_hat);
-% colormap gray(256);
+% read a blurred image
+g_blur = imread("../images/boats512_outoffocus.bmp");
+g_blur = im2double(g_blur);
+var = 0.0833; % noise variance from the instruction
+f_hat = wiener_filter(g_blur, h, var);
 
+% show the result
 figure(4);
-subplot(2,2,1);
+subplot(2, 2, 1);
 imagesc((F_spectra));
-subplot(2,2,2);
+subplot(2, 2, 2);
 imagesc(G_spectra);
-subplot(2,2,3);
-imagesc(g);
-subplot(2,2,4);
+subplot(2, 2, 3);
+imagesc(g_blur);
+subplot(2, 2, 4);
 imagesc(f_hat);
 colormap gray(256);
