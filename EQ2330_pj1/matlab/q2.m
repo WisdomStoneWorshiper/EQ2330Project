@@ -34,6 +34,7 @@ histogram(double(lena_o));
 xlabel('r');
 ylabel('h(r)');
 axis([0 255 0 inf]);
+colormap gray(256);
 
 % Display histogram
 figure(2);
