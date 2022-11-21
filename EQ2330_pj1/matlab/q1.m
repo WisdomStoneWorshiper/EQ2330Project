@@ -1,21 +1,12 @@
 lena = imread('../images/lena512.bmp');
-%baboon = imread('images\baboon512.bmp');
-%cabin = imread('images\cabin512.bmp');
-%boats = imread('images\boats512_outoffocus.bmp');
-%goldhill = imread("images\goldhill512.bmp");
-%man = imread("images\man512_outoffocus.bmp");
 
-imhist(lena);
-lenavec = lena(:);
-figure, histogram(lenavec);
-imhist(lena);
-%imshow(lena);
-
-lenalowcont = lowcontrastfnct(0.2,50,lena);
+lenavec = lena(:); %image to vector
+figure, histogram(lenavec); %plot histogram
+imhist(lena); %display image
+lenalowcont = lowcontrastfnct(0.2,50,lena); %function to generate a low contrast image
 imagesc(lenalowcont, [0 255]);
 figure,histogram(lenalowcont);
 imshow(lenalowcont);
-%imhist(lenalowcont);
 ylim([0,30000])
 
 %histogram equalization without using histeq()
@@ -32,6 +23,3 @@ CSum=cumsum(Output);
 HIm=CSum(lenalowcont+1)*255;
 imshow(HIm);
 figure,histogram(HIm);
-
-%lenahisteq = histeq(lenalowcont);
-%imhist(lenahisteq);
