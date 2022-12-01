@@ -10,8 +10,8 @@ function output = fwt_synthesis(cA, cD, LPF)
     output1 = conv(padded_cA, LPF, "full");
     output2 = conv(padded_cD, HPF, "full");
 
-    output1 = output1(length(LPF):end - (length(LPF)-1)*2);
-    output2 = output2(length(HPF):end - (length(HPF)-1)*2);
+    output1 = output1(length(LPF)+1:end - (length(LPF)-1)*2+1);
+    output2 = output2(length(HPF)+1:end - (length(HPF)-1)*2+1);
 
     output = output1 + output2;
 end
