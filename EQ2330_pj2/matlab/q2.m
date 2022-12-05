@@ -17,7 +17,19 @@ imagesc(HHs{scale});
 colormap gray(256);
 
 step = 1;
-LLs{scale} = quantizer(LLs{scale}, step);
-LHs{scale} = quantizer(LHs{scale}, step);
-HLs{scale} = quantizer(HLs{scale}, step);
-HHs{scale} = quantizer(HHs{scale}, step);
+
+[LLs, LHs, HLs, HHs] = quantize_all(LLs, LHs, HLs, HHs, scale, step);
+img_re = ifwt2d_scale(LLs, LHs, HLs, HHs, scale);
+
+subplot(1, 2, 1);
+imagesc(img);
+subplot(1, 2, 2);
+imagesc(img_re);
+colormap gray(256);
+
+img = im2double(img);
+
+harbour_psnr = psnr_8bits(img, img_re);
+b = bitrate(LLs{1});
+
+disp("harbour_psnr: " + harbour_psnr);
