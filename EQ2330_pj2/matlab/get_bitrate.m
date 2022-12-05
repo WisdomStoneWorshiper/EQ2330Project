@@ -1,17 +1,14 @@
-function [bitrate,entropy] = get_bitrate(img,step_len,M)
+function [bitrate,entropys] = get_bitrate(img,step,M)
 size_img = size(img);
-size_block = size_img/M;
 img_q = zeros(size_img);
-for i = 1:size_block(1)
-    for j = 1:size_block(2)
-        img_block = img((i-1)*M+1:M*i,(j-1)*M+1:M*j);
-        [img_dct,~] = mydct2(img_block,M); % DCT
-        img_q = round(img_dct/step_len)*step_len; % quantizer
-        img_q((i-1)*M+1:i*M,(j-1)*M+1:j*M) = img_q;
+for i = 1:size_img(1)/M
+    for j = 1:size_img(2)/M
+        [img_dct,~] = mydct2(img((i-1)*M+1:M*i,(j-1)*M+1:M*j),M); % DCT
+        img_q((i-1)*M+1:i*M,(j-1)*M+1:j*M) = round(img_dct/step)*step; % quantizer
     end
 end
 K = zeros(8,8,64*64); 
-entropy = zeros(M);
+entropys = zeros(M);
 for m = 1:M
     for n = 1:M
         for p = 0:63
@@ -24,16 +21,15 @@ for m = 1:M
         end
     end
 end
-
 for m = 1:M
     for n = 1:M
         val = K(m,n,:);
-        bins= min(val):step_len:max(val);
+        bins= min(val):step:max(val);
         pr = hist(val(:),bins(:));
         prb = pr/sum(pr);
-        etrpy = -sum(prb.*log2(prb+eps));
-        entropy(m,n) = etrpy;
+        etropy = -sum(prb.*log2(prb+eps));
+        entropys(m,n) = etropy;
     end
 end
-bitrate = mean(entropy(:));
+bitrate = mean(entropys(:));
 end
