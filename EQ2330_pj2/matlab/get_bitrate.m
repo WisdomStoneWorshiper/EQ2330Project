@@ -3,7 +3,7 @@ size_img = size(img);
 img_q = zeros(size_img);
 for i = 1:size_img(1)/M
     for j = 1:size_img(2)/M
-        [img_dct,~] = mydct2(img((i-1)*M+1:M*i,(j-1)*M+1:M*j),M); % DCT
+        img_dct = dct2(img((i-1)*M+1:M*i,(j-1)*M+1:M*j)); % DCT
         img_q((i-1)*M+1:i*M,(j-1)*M+1:j*M) = quantizer(img_dct,step); % quantizer
     end
 end
