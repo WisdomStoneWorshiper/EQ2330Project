@@ -1,3 +1,6 @@
+clc;
+clear;
+
 load coeffs.mat
 
 img = imread("../images/harbour512x512.tif");

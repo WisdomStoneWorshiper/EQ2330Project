@@ -1,3 +1,6 @@
+clc;
+clear;
+
 imgs{1} = 255*im2double(imread("../images/boats512x512.tif"));
 imgs{2} = 255*im2double(imread("../images/harbour512x512.tif"));
 imgs{3} = 255*im2double(imread("../images/peppers512x512.tif"));
