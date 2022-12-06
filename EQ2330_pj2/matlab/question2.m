@@ -17,8 +17,8 @@ imagesc(boat8x8);
 
 %dct2 transform 
 subplot(1,3,2);
-y = Mydct2(boat8x8,M);
+y = get_dct2(boat8x8,M);
 
 %inverse dct2 transfosrm
 subplot(1,3,3);
-Myindct2(y,M);
+get_indct2(y,M);
