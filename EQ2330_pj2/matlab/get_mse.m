@@ -7,7 +7,7 @@ for i = 1:size_block(1)
     for j = 1:size_block(2)
         img_block = img((i-1)*M+1:i*M,(j-1)*M+1:j*M); 
         [img_dct,A] = mydct2(img_block,M); % DCT
-        img_q = round(img_dct/step)*step; % quantizer
+        img_q = quantizer(img_dct, step); % quantizer
         img_rc((i-1)*M+1:i*M,(j-1)*M+1:j*M) = A'*img_q*A; % reconstructed = IDCT
     end
 end

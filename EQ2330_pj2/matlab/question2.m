@@ -26,3 +26,11 @@ x = A'*y*A;
 subplot(1,3,3);
 plot_matrix(x);
 
+% quantizer
+% x: 0-64
+% y: function output
+figure(1);
+arr = 0:0.1:64;
+output = quantizer(arr, 4);
+subplot(1,1,1);
+plot(arr, output);

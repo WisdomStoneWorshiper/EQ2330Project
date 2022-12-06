@@ -10,7 +10,7 @@ for i = 1:size_img(1)/M
     for j = 1:size_img(2)/M
         img_block = img((i-1)*M+1:M*i,(j-1)*M+1:M*j); % index of the row: (i-1)*M+1:M*i, index of the column: (j-1)*M+1:M*j
         [img_dct, A] = mydct2(img_block, M); % DCT
-        img_q = round(img_dct); % quantizer
+        img_q = quantizer(img_dct, 1); % quantizer
         mse_q = mse_q + sum((img_dct(:)-img_q(:)).^2)/length(img_dct(:));
         img_rc((i-1)*M+1:M*i,(j-1)*M+1:M*j) = A'*img_q*A; % reconstructed (IDCT)
     end
