@@ -15,15 +15,14 @@ figure(3)
 subplot(1,3,1);
 imagesc(boat8x8);
 
-
 %dct2 transform 
-y = A*boat8x8*A'; %x is the signal block
 subplot(1,3,2);
-plot_matrix(y);
+y = get_dct2(boat8x8,M);
 
-%inverse dct2 transform
-x = A'*y*A;
+%inverse dct2 transfosrm
 subplot(1,3,3);
+get_indct2(y,M);
+
 plot_matrix(x);
 
 % quantizer
