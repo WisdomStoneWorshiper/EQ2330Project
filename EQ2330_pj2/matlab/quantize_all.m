@@ -1,4 +1,5 @@
 function [LLs, LHs, HLs, HHs] = quantize_all(LLs, LHs, HLs, HHs, scale, step)
+    % quantize all coefficients
     for i = 1:scale
         LLs{i} = quantizer(LLs{i}, step);
         LHs{i} = quantizer(LHs{i}, step);

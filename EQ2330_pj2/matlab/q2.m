@@ -7,8 +7,10 @@ img = imread("../images/harbour512x512.tif");
 
 scale = 4;
 
+% perform fwt in harbour
 [LLs, LHs, HLs, HHs] = fwt2d_scale(img, scale);
 
+%plot all of the coefficients in scale 4
 figure(1);
 subplot(1, 4, 1);
 imagesc(LLs{scale});
@@ -26,9 +28,12 @@ colormap gray(256);
 
 step = 1;
 
+%quantize all coefficients
 [qLLs, qLHs, qHLs, qHHs] = quantize_all(LLs, LHs, HLs, HHs, scale, step);
+% recontruct the image
 img_re = ifwt2d_scale(qLLs, qLHs, qHLs, qHHs, scale);
 
+% plot the image
 figure(2);
 subplot(1, 2, 1);
 imagesc(img);
@@ -40,10 +45,12 @@ colormap gray(256);
 
 img = 255*im2double(img);
 
+% calculate the mse between original image and reconstructed image
 ori_re_mse = mse(img, img_re);
 
 disp("d between original and reconstructed: " + ori_re_mse);
 
+% calculate the mse between each of the coefficients
 LLs_mse = zeros(1,4);
 LHs_mse = zeros(1,4);
 HLs_mse = zeros(1,4);
@@ -56,6 +63,7 @@ for i = 1:scale
     HHs_mse(i) = mse(HHs{i},qHHs{i});
 end
 
+% take the weighted average
 overall_cof_mean = 0;
 
 for i = 1:scale

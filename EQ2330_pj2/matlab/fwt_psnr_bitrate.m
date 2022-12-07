@@ -20,12 +20,16 @@ PSNRs = zeros(10, 3);
 for i = 1:total_step_range
     concated_coffs = cell(4,scale);
     for j = 1:total_imgs
+        % apply fwt to each image
         [LLs, LHs, HLs, HHs] = fwt2d_scale(imgs{j}, scale);
+        % quantize all of the coefficients
         [LLs, LHs, HLs, HHs] = quantize_all(LLs, LHs, HLs, HHs, scale, step_range(i));
-        
+        % reconstruct the image
         img_re = ifwt2d_scale(LLs, LHs, HLs, HHs, scale);
+        % calculate the PSNR
         PSNRs(i,j) = psnr_8bits(imgs{j}, img_re);
         
+        % merge all coefficients in each of the subband
         if j == 1
             for k = 1:scale
                 concated_coffs{1,k} = LLs{k}(:);
@@ -44,11 +48,13 @@ for i = 1:total_step_range
         end
      
     end
+    % calculate the bit rate of each subband
     for j = 1:4
         for k = 1: scale
             bitrates(i,j,k)= bitrate(concated_coffs{j,k});
         end
     end
+    % calculate the weighted average of the bit-rate
     for j = 2:4
         for k = 1:scale
             weighted_avg_bitrates(i) = weighted_avg_bitrates(i) + bitrates(i,j,k)*1/(4^k);
@@ -60,9 +66,5 @@ end
 
 avg_PSNRs = mean(PSNRs, 2).';
 
-% figure(3);
-% plot(weigthed_avg_bitrates, avg_PSNRs, '-ro');
-% xlabel("Bit-rates");
-% ylabel("PSNR");
 end
 
