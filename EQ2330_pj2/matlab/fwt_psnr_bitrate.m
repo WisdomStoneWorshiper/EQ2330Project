@@ -1,5 +1,4 @@
-clc;
-clear;
+function [weigthed_avg_bitrates, avg_PSNRs] = fwt_psnr_bitrate()
 
 imgs{1} = 255*im2double(imread("../images/boats512x512.tif"));
 imgs{2} = 255*im2double(imread("../images/harbour512x512.tif"));
@@ -59,10 +58,11 @@ for i = 1:total_step_range
 
 end
 
-avg_PSNR = mean(PSNRs, 2).';
+avg_PSNRs = mean(PSNRs, 2).';
 
-figure(3);
-plot(weigthed_avg_bitrates, avg_PSNR, '-ro');
-xlabel("Bit-rates");
-ylabel("PSNR");
+% figure(3);
+% plot(weigthed_avg_bitrates, avg_PSNRs, '-ro');
+% xlabel("Bit-rates");
+% ylabel("PSNR");
+end
 

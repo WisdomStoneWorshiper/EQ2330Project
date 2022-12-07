@@ -102,7 +102,15 @@ avg_PSNRs = mean(PSNRs,2);
 avg_bitrates = mean(bitrates,2);
 avg_bitrates = mean(avg_bitrates, 3);
 
+[fwt_avg_bitrates, fwt_avg_PSNRs]=fwt_psnr_bitrate();
+
 figure(2);
+
 plot(avg_bitrates, avg_PSNRs, '-bo');
+hold on;
+plot(fwt_avg_bitrates, fwt_avg_PSNRs, '-ro');
+
 xlabel("Bit-rates");
 ylabel("PSNR");
+legend("DCT", "FWT");
+grid on;
