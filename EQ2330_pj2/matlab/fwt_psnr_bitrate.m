@@ -1,4 +1,4 @@
-function [weigthed_avg_bitrates, avg_PSNRs] = fwt_psnr_bitrate()
+function [weighted_avg_bitrates, avg_PSNRs] = fwt_psnr_bitrate()
 
 imgs{1} = 255*im2double(imread("../images/boats512x512.tif"));
 imgs{2} = 255*im2double(imread("../images/harbour512x512.tif"));
@@ -13,7 +13,7 @@ step_range = [2^0, 2^1, 2^2, 2^3, 2^4, 2^5, 2^6, 2^7, 2^8, 2^9];
 [~, total_step_range] = size(step_range);
 
 bitrates = zeros(10,4,scale);
-weigthed_avg_bitrates = zeros(10,1);
+weighted_avg_bitrates = zeros(10,1);
 
 PSNRs = zeros(10, 3);
 
@@ -51,10 +51,10 @@ for i = 1:total_step_range
     end
     for j = 2:4
         for k = 1:scale
-            weigthed_avg_bitrates(i) = weigthed_avg_bitrates(i) + bitrates(i,j,k)*1/(4^k);
+            weighted_avg_bitrates(i) = weighted_avg_bitrates(i) + bitrates(i,j,k)*1/(4^k);
         end
     end
-    weigthed_avg_bitrates(i) = weigthed_avg_bitrates(i) + bitrates(i,1,scale) * 1/(4^k);
+    weighted_avg_bitrates(i) = weighted_avg_bitrates(i) + bitrates(i,1,scale) * 1/(4^k);
 
 end
 
