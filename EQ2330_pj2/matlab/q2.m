@@ -56,10 +56,12 @@ for i = 1:scale
     HHs_mse(i) = mse(HHs{i},qHHs{i});
 end
 
-cof_mean = zeros(1,4);
-cof_mean(1) = mean(LLs_mse);
-cof_mean(2) = mean(LHs_mse);
-cof_mean(3) = mean(HLs_mse);
-cof_mean(4) = mean(HHs_mse);
+overall_cof_mean = 0;
 
-overall_cof_mean = mean(cof_mean);
+for i = 1:scale
+    overall_cof_mean = overall_cof_mean + LHs_mse(i)*(1/(4^i));
+    overall_cof_mean = overall_cof_mean + HLs_mse(i)*(1/(4^i));
+    overall_cof_mean = overall_cof_mean + HHs_mse(i)*(1/(4^i));
+end
+
+overall_cof_mean = overall_cof_mean + LLs_mse(scale)*(1/(4^scale));
