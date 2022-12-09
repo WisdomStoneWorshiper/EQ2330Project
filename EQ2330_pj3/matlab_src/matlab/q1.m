@@ -25,26 +25,29 @@ end
 
 avg_foreman_psnr = mean(foreman_psnr,2);
 
-bitrates = zeros(4,frame_height/block_size,frame_width/block_size);
+foreman_bitrates = zeros(4,frame_height/block_size,frame_width/block_size);
 
-% for i = 3:6
-%     concated_coffs = cell(frame_height/block_size,frame_width/block_size);
-%     for j = 1:num_of_frames
-%         divided = mat2cell(foreman_quantized{i-2,j},repelem(16,frame_height/block_size),repelem(16,frame_width/block_size)); 
-%         for k = 1:frame_height/block_size
-%             for l= 1:frame_width/block_size
-%                 if j ==1
-%                     concated_coffs{k,l}=divided{k,l}(:);
-%                 else
-%                     concated_coffs{k,l} = [concated_coffs{k,l};divided{k,l}(:)];
-%                 end
-%                 if j == num_of_frames
-%                     bitrates(i,k,l)=bitrate(concated_coffs{k,l});
-%                 end
-%             end
-%         end 
-%     end
-% end
+for i = 3:6
+    concated_coffs = cell(frame_height/block_size,frame_width/block_size);
+    for j = 1:num_of_frames
+        divided = mat2cell(foreman_quantized{i-2,j},repelem(16,frame_height/block_size),repelem(16,frame_width/block_size)); 
+        for k = 1:frame_height/block_size
+            for l= 1:frame_width/block_size
+                if j ==1
+                    concated_coffs{k,l}=divided{k,l}(:);
+                else
+                    concated_coffs{k,l} = [concated_coffs{k,l};divided{k,l}(:)];
+                end
+                if j == num_of_frames
+                    foreman_bitrates(i-2,k,l)=bitrate(concated_coffs{k,l});
+                end
+            end
+        end 
+    end
+end
+
+avg_foreman_bitrates = mean(foreman_bitrates,2);
+avg_foreman_bitrates = mean(avg_foreman_bitrates,3);
 
 
 
