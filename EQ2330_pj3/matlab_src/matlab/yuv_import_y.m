@@ -23,7 +23,7 @@ function Y = yuv_import_y(filename,dims,numfrm,startfrm)
 fid=fopen(filename,'rb');
 if (fid < 0) 
     error('File does not exist!');
-end;
+end
 
 Y = cell(numfrm,1);
 frelem = prod(dims)*3/2;
