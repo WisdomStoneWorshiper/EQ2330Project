@@ -1,4 +1,4 @@
-function [avg_img_psnr, avg_img_bitrates, img_distortion, img_bitrates] = intra_frame_coder(img_path)
+function [avg_img_psnr, avg_img_bitrates, img_distortion, img_bitrates, img, img_idct] = intra_frame_coder(img_path)
     frame_width = 176;
     frame_height = 144;
     block_size = 16;
