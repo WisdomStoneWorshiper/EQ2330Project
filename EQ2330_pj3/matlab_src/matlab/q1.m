@@ -25,6 +25,7 @@ end
 
 avg_foreman_psnr = mean(foreman_psnr,2);
 
+foreman_distortion = zeros(4, num_of_frames,frame_height/block_size,frame_width/block_size);
 foreman_bitrates = zeros(4,frame_height/block_size,frame_width/block_size);
 
 for i = 3:6
@@ -33,6 +34,9 @@ for i = 3:6
         divided = mat2cell(foreman_quantized{i-2,j},repelem(16,frame_height/block_size),repelem(16,frame_width/block_size)); 
         for k = 1:frame_height/block_size
             for l= 1:frame_width/block_size
+                dct_sec = foreman_quantized{i-2,k}((k-1)*block_size+1:k*block_size, (l-1)*block_size+1:l*block_size);
+                img_re = blockproc(dct_sec, [8 8], @(block_struct) idct2(block_struct.data));
+                foreman_distortion(i-2,j,k,l)=mse(img_re, foreman{j}((k-1)*block_size+1:k*block_size, (l-1)*block_size+1:l*block_size));
                 if j ==1
                     concated_coffs{k,l}=divided{k,l}(:);
                 else
@@ -48,7 +52,7 @@ end
 
 avg_foreman_bitrates = mean(foreman_bitrates,2);
 avg_foreman_bitrates = mean(avg_foreman_bitrates,3);
-
+avg_foreman_bitrates = avg_foreman_bitrates*30*frame_width*frame_height/1000;
 
 
 foreman16x16 = cell([50 1]);
