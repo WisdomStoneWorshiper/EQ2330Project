@@ -83,61 +83,79 @@ avg_residual_bitrates = mean(avg_residual_bitrates, 3);
 video_re = cell(4, num_of_frames);
 frame_psnr = zeros(4, num_of_frames);
 
-% for i = 3:6
-%
-%     for j = 1:num_of_frames
-%
-%         for k = 1:frame_height / block_size
-%
-%             for l = 1:frame_width / block_size
-%                 y_start = (k - 1) * block_size + 1;
-%                 y_end = k * block_size;
-%                 x_start = (l - 1) * block_size + 1;
-%                 x_end = l * block_size;
-%
-%                 if j == 1
-%                     video_bitrates(i - 2, j, k, l) = avg_intra_bitrates(i - 2) * block_size ^ 2 + 2;
-%                     %                     video_bitrates_debug{i - 2, j}(k, l) = intra_bitrates(i - 2, k, l) + 1; % add 2 bits for indicating copy or intra mode
-%
-%                     video_re{i - 2, j}(y_start:y_end, x_start:x_end) = video_intra_idct{i - 2, j}(y_start:y_end, x_start:x_end);
-%                 else
-%                     org_frame = org_video{j}(y_start:y_end, x_start:x_end);
-%                     r_intra = avg_intra_bitrates(i - 2) * (block_size ^ 2) + 2;
-%                     intra_re = video_intra_idct{i - 2, j}(y_start:y_end, x_start:x_end);
-%                     intra_distortion = mse(org_frame, intra_re);
-%                     j_intra = lagrangian_cost(intra_distortion, r_intra, 2 ^ i);
-%
-%                     last_frame = video_re{i - 2, j - 1}(y_start:y_end, x_start:x_end);
-%                     copy_distortion = mse(org_frame, last_frame);
-%                     j_copy = lagrangian_cost(copy_distortion, 2, 2 ^ i); % only 2 bits for indicating copy intra mode
-%
-%                     if j_intra < j_copy
-%                         % if intra mode is selected
-%                         video_bitrates(i - 2, j, k, l) = avg_intra_bitrates(i - 2) * block_size ^ 2 + 1;
-%                         %                         video_bitrates_debug{i - 2, j}(k, l) = intra_bitrates(i - 2, k, l) + 1;
-%                         video_re{i - 2, j}(y_start:y_end, x_start:x_end) = video_intra_idct{i - 2, j}(y_start:y_end, x_start:x_end);
-%                     else
-%                         % if copy mode is selected
-%                         video_bitrates(i - 2, j, k, l) = 1;
-%                         %                         video_bitrates_debug{i - 2, j}(k, l) = 1;
-%                         video_re{i - 2, j}(y_start:y_end, x_start:x_end) = video_re{i - 2, j - 1}(y_start:y_end, x_start:x_end);
-%                     end
-%
-%                 end
-%
-%             end
-%
-%         end
-%
-%         frame_psnr(i - 2, j) = psnr_8bits(org_video{j}, video_re{i - 2, j});
-%     end
-%
-% end
-%
-% avg_video_psnr = mean(frame_psnr, 2);
-%
-% frame_bitrate = sum(video_bitrates, [3, 4]);
-%
-% avg_video_bitrate = mean(frame_bitrate, 2);
-%
-% avg_video_bitrate = avg_video_bitrate * 30/1000;
+for i = 3:6
+
+    for j = 1:num_of_frames
+
+        for k = 1:frame_height / block_size
+
+            for l = 1:frame_width / block_size
+                y_start = (k - 1) * block_size + 1;
+                y_end = k * block_size;
+                x_start = (l - 1) * block_size + 1;
+                x_end = l * block_size;
+
+                if j == 1
+                    video_bitrates(i - 2, j, k, l) = avg_intra_bitrates(i - 2) * block_size ^ 2 + 2;
+                    %                     video_bitrates_debug{i - 2, j}(k, l) = intra_bitrates(i - 2, k, l) + 1; % add 2 bits for indicating copy or intra mode
+
+                    video_re{i - 2, j}(y_start:y_end, x_start:x_end) = video_intra_idct{i - 2, j}(y_start:y_end, x_start:x_end);
+                else
+                    org_frame = org_video{j}(y_start:y_end, x_start:x_end);
+
+                    r_intra = avg_intra_bitrates(i - 2) * (block_size ^ 2) + 2;
+                    intra_re = video_intra_idct{i - 2, j}(y_start:y_end, x_start:x_end);
+                    intra_distortion = mse(org_frame, intra_re);
+                    j_intra = lagrangian_cost(intra_distortion, r_intra, 2 ^ i);
+
+                    r_inter = avg_residual_bitrates(i - 2) * (block_size ^ 2) + 2+10;
+                    inter_re = motion_video_re{i - 2, j-1}(y_start:y_end, x_start:x_end);
+                    inter_distortion = mse(org_frame, r_inter);
+                    j_inter = lagrangian_cost(inter_distortion, r_inter, 2 ^ i);
+
+                    r_copy = 2;
+                    last_frame = video_re{i - 2, j - 1}(y_start:y_end, x_start:x_end);
+                    copy_distortion = mse(org_frame, last_frame);
+                    j_copy = lagrangian_cost(copy_distortion, r_copy, 2 ^ i); % only 2 bits for indicating copy intra mode
+
+                    if j_intra < j_copy && j_intra<j_inter
+                        % if intra mode is selected
+                        video_bitrates(i - 2, j, k, l) = r_intra;
+                        %                         video_bitrates_debug{i - 2, j}(k, l) = intra_bitrates(i - 2, k, l) + 1;
+                        video_re{i - 2, j}(y_start:y_end, x_start:x_end) = intra_re;
+                    elseif j_inter<j_intra && j_inter<j_copy
+                        video_bitrates(i - 2, j, k, l) = r_inter;
+                        video_re{i - 2, j}(y_start:y_end, x_start:x_end) = inter_re;
+                    else
+                        % if copy mode is selected
+                        video_bitrates(i - 2, j, k, l) = r_copy;
+                        %                         video_bitrates_debug{i - 2, j}(k, l) = 1;
+                        video_re{i - 2, j}(y_start:y_end, x_start:x_end) = last_frame;
+                    end
+
+                end
+
+            end
+
+        end
+
+        frame_psnr(i - 2, j) = psnr_8bits(org_video{j}, video_re{i - 2, j});
+    end
+
+end
+
+avg_video_psnr = mean(frame_psnr, 2);
+
+frame_bitrate = sum(video_bitrates, [3, 4]);
+
+avg_video_bitrate = mean(frame_bitrate, 2);
+
+avg_video_bitrate = avg_video_bitrate * 30/1000;
+
+figure(1);
+
+plot(avg_video_bitrate, avg_video_psnr, '-bo');
+title("conditional replenishment with Motion Compensation when lambda = 0.002Q^2");
+xlabel("Bit-rates");
+ylabel("PSNR");
+grid on;

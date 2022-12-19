@@ -72,3 +72,11 @@ frame_bitrate = sum(video_bitrates,[3,4]);
 avg_video_bitrate = mean(frame_bitrate, 2);
 
 avg_video_bitrate = avg_video_bitrate* 30 / 1000;
+
+figure(1);
+
+plot(avg_video_bitrate, avg_video_psnr, '-bo');
+title("conditional replenishment when lambda = 0.02Q^2");
+xlabel("Bit-rates");
+ylabel("PSNR");
+grid on;
