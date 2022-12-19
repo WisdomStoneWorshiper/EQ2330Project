@@ -1,4 +1,4 @@
-function [avg_video_psnr,avg_video_bitrate] = motion_compensation(video_path)
+function [avg_video_psnr,avg_video_bitrate, copy_per, intra_per, inter_per] = motion_compensation(video_path)
 frame_width = 176;
 frame_height = 144;
 block_size = 16;
@@ -80,7 +80,16 @@ avg_residual_bitrates = mean(avg_residual_bitrates, 3);
 video_re = cell(4, num_of_frames);
 frame_psnr = zeros(4, num_of_frames);
 
+copy_per = zeros(4,1);
+intra_per = zeros(4,1);
+inter_per = zeros(4,1);
+
 for i = 3:6
+
+    copy_count =0;
+    intra_count =0;
+    inter_count = 0;
+    total_count = 0;
 
     for j = 1:num_of_frames
 
@@ -91,8 +100,9 @@ for i = 3:6
                 y_end = k * block_size;
                 x_start = (l - 1) * block_size + 1;
                 x_end = l * block_size;
-
+                total_count = total_count+1;
                 if j == 1
+                    intra_count = intra_count +1;
                     video_bitrates(i - 2, j, k, l) = avg_intra_bitrates(i - 2) * block_size ^ 2 + 2;
                     %                     video_bitrates_debug{i - 2, j}(k, l) = intra_bitrates(i - 2, k, l) + 1; % add 2 bits for indicating copy or intra mode
 
@@ -117,14 +127,17 @@ for i = 3:6
 
                     if j_intra < j_copy && j_intra<j_inter
                         % if intra mode is selected
+                        intra_count = intra_count +1;
                         video_bitrates(i - 2, j, k, l) = r_intra;
                         %                         video_bitrates_debug{i - 2, j}(k, l) = intra_bitrates(i - 2, k, l) + 1;
                         video_re{i - 2, j}(y_start:y_end, x_start:x_end) = intra_re;
                     elseif j_inter<j_intra && j_inter<j_copy
+                        inter_count = inter_count +1;
                         video_bitrates(i - 2, j, k, l) = r_inter;
                         video_re{i - 2, j}(y_start:y_end, x_start:x_end) = inter_re;
                     else
                         % if copy mode is selected
+                        copy_count = copy_count +1;
                         video_bitrates(i - 2, j, k, l) = r_copy;
                         %                         video_bitrates_debug{i - 2, j}(k, l) = 1;
                         video_re{i - 2, j}(y_start:y_end, x_start:x_end) = last_frame;
@@ -138,7 +151,9 @@ for i = 3:6
 
         frame_psnr(i - 2, j) = psnr_8bits(org_video{j}, video_re{i - 2, j});
     end
-
+    copy_per(i-2) = copy_count/total_count;
+    intra_per(i-2) = intra_count/total_count;
+    inter_per(i-2) = inter_count/total_count;
 end
 
 avg_video_psnr = mean(frame_psnr, 2);

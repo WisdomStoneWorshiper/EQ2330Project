@@ -1,4 +1,4 @@
-function [avg_video_psnr,avg_video_bitrate] = conditional_replenishment(video_path)
+function [avg_video_psnr,avg_video_bitrate, copy_per, intra_per] = conditional_replenishment(video_path)
 frame_width = 176;
 frame_height = 144;
 block_size = 16;
@@ -12,7 +12,14 @@ video_bitrates = zeros(4, num_of_frames, frame_height / block_size, frame_width 
 video_re = cell(4, num_of_frames);
 frame_psnr = zeros(4, num_of_frames);
 
+copy_per = zeros(4,1);
+intra_per = zeros(4,1);
+
 for i = 3:6
+
+    copy_count =0;
+    intra_count =0;
+    total_count = 0;
 
     for j = 1:num_of_frames
 
@@ -23,7 +30,9 @@ for i = 3:6
                 y_end = k * block_size;
                 x_start = (l - 1) * block_size + 1;
                 x_end = l * block_size;
+                total_count = total_count+1;
                 if j == 1
+                    intra_count = intra_count +1;
                     video_bitrates(i - 2, j, k, l) = avg_intra_bitrates(i-2)*block_size^2+1;
 %                     video_bitrates_debug{i - 2, j}(k, l) = intra_bitrates(i - 2, k, l) + 1; % add 1 start bit for indicating copy or intra mode
                     
@@ -42,15 +51,18 @@ for i = 3:6
 
                     if j_intra < j_copy
                         % if intra mode is selected
+                        intra_count = intra_count +1;
                         video_bitrates(i - 2, j, k, l) = avg_intra_bitrates(i-2)*block_size^2 + 1;
 %                         video_bitrates_debug{i - 2, j}(k, l) = intra_bitrates(i - 2, k, l) + 1;
                         video_re{i - 2, j}(y_start:y_end, x_start:x_end) = video_intra_idct{i - 2, j}(y_start:y_end, x_start:x_end);
                     else
                         % if copy mode is selected
+                        copy_count = copy_count +1;
                         video_bitrates(i - 2, j, k, l) = 1;
 %                         video_bitrates_debug{i - 2, j}(k, l) = 1;
                         video_re{i - 2, j}(y_start:y_end, x_start:x_end) = video_re{i - 2, j - 1}(y_start:y_end, x_start:x_end);
                     end
+                    
 
                 end
 
@@ -60,6 +72,8 @@ for i = 3:6
 
         frame_psnr(i - 2, j) = psnr_8bits(org_video{j}, video_re{i - 2, j});
     end
+    copy_per(i-2) = copy_count/total_count;
+    intra_per(i-2) = intra_count/total_count;
 
 end
 

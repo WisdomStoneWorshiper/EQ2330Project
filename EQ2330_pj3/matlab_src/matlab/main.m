@@ -28,9 +28,9 @@ grid on;
 
 %q2
 
-[avg_c_foreman_psnr, avg_c_foreman_bitrates] = conditional_replenishment(foreman);
+[avg_c_foreman_psnr, avg_c_foreman_bitrates, c_foreman_copy_per, c_foreman_intra_per] = conditional_replenishment(foreman);
 
-[avg_c_md_psnr, avg_c_md_bitrates] = conditional_replenishment(md);
+[avg_c_md_psnr, avg_c_md_bitrates, c_md_copy_per, c_md_intra_per] = conditional_replenishment(md);
 
 figure(2);
 
@@ -53,9 +53,9 @@ legend("mother-daughter-intra coder only", "mother-daughter-conditional replenis
 grid on;
 
 %q3
-[avg_m_foreman_psnr, avg_m_foreman_bitrates] = motion_compensation(foreman);
+[avg_m_foreman_psnr, avg_m_foreman_bitrates, m_foreman_copy_per, m_foreman_intra_per, m_foreman_inter_per] = motion_compensation(foreman);
 
-[avg_m_md_psnr, avg_m_md_bitrates] = motion_compensation(md);
+[avg_m_md_psnr, avg_m_md_bitrates, m_md_copy_per, m_md_intra_per, m_md_inter_per] = motion_compensation(md);
 
 figure(4);
 
