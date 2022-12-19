@@ -1,13 +1,10 @@
-clc;
-clear;
-
+function [avg_video_psnr,avg_video_bitrate] = motion_compensation(video_path)
 frame_width = 176;
 frame_height = 144;
 block_size = 16;
 num_of_frames = 50;
-video_path = '../../foreman_qcif/foreman_qcif.yuv';
 
-[~, avg_intra_bitrates, intra_distortion, ~, org_video, video_intra_idct] = intra_frame_coder(video_path);
+[~, avg_intra_bitrates, ~, ~, org_video, video_intra_idct] = intra_frame_coder(video_path);
 
 video_bitrates = zeros(4, num_of_frames, frame_height / block_size, frame_width / block_size);
 % video_bitrates_debug = cell(4, num_of_frames);
@@ -151,11 +148,5 @@ frame_bitrate = sum(video_bitrates, [3, 4]);
 avg_video_bitrate = mean(frame_bitrate, 2);
 
 avg_video_bitrate = avg_video_bitrate * 30/1000;
+end
 
-figure(1);
-
-plot(avg_video_bitrate, avg_video_psnr, '-bo');
-title("conditional replenishment with Motion Compensation when lambda = 0.002Q^2");
-xlabel("Bit-rates");
-ylabel("PSNR");
-grid on;
