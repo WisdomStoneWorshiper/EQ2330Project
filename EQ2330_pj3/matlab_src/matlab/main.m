@@ -6,17 +6,16 @@ frame_width = 176;
 frame_height = 144;
 
 foreman = '../../foreman_qcif/foreman_qcif.yuv';
-[avg_i_foreman_psnr, avg_i_foreman_bitrates, ~,~,~,~] = intra_frame_coder(foreman);
+[avg_i_foreman_psnr, avg_i_foreman_bitrates, ~, ~, ~, ~] = intra_frame_coder(foreman);
 
 % convert the bitrate into kbit/s
 avg_i_foreman_bitrates = avg_i_foreman_bitrates * 30 * frame_width * frame_height / 1000;
 
 md = '../../mother-daughter_qcif/mother-daughter_qcif.yuv';
-[avg_i_md_psnr, avg_i_md_bitrates, ~,~,~,~] = intra_frame_coder(md);
+[avg_i_md_psnr, avg_i_md_bitrates, ~, ~, ~, ~] = intra_frame_coder(md);
 
 % convert the bitrate into kbit/s
 avg_i_md_bitrates = avg_i_md_bitrates * 30 * frame_width * frame_height / 1000;
-
 
 figure(1);
 
