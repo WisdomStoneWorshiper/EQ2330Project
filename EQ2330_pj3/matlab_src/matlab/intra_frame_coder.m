@@ -10,8 +10,8 @@ function [avg_img_psnr, avg_img_bitrates, img_distortion, img_bitrates, img, img
     img_quantized = cell(4, num_of_frames);
     img_idct = cell(4, num_of_frames);
     img_psnr = zeros(4, num_of_frames);
+    
     %dct to all frames
-
     for i = 1:num_of_frames
         img_dct{i, 1} = blockproc(img{i, 1}, [8 8], @(block_struct) dct2(block_struct.data));
 
@@ -28,16 +28,19 @@ function [avg_img_psnr, avg_img_bitrates, img_distortion, img_bitrates, img, img
     img_distortion = zeros(4, num_of_frames, frame_height / block_size, frame_width / block_size);
     img_bitrates = zeros(4, block_size, block_size);
 
+    % for each step size
     for i = 3:6
         concated_coffs = 0;
 
+        % for each frame
         for j = 1:num_of_frames
+            % divide into 16x16 blocks
             divided = mat2cell(img_quantized{i - 2, j}, repelem(16, frame_height / block_size), repelem(16, frame_width / block_size));
 
             for k = 1:frame_height / block_size
 
                 for l = 1:frame_width / block_size
-                    dct_sec = img_quantized{i - 2, k}((k - 1) * block_size + 1:k * block_size, (l - 1) * block_size + 1:l * block_size);
+                    dct_sec = img_quantized{i - 2, j}((k - 1) * block_size + 1:k * block_size, (l - 1) * block_size + 1:l * block_size);
                     img_re = blockproc(dct_sec, [8 8], @(block_struct) idct2(block_struct.data));
                     img_distortion(i - 2, j, k, l) = mse(img_re, img{j}((k - 1) * block_size + 1:k * block_size, (l - 1) * block_size + 1:l * block_size));
 
@@ -52,6 +55,7 @@ function [avg_img_psnr, avg_img_bitrates, img_distortion, img_bitrates, img, img
             end
 
         end
+        % calculate the bit-rate
         for k=1:block_size
             for l =1:block_size
                 img_bitrates(i-2,k,l)=bitrate(reshape(concated_coffs(k,l,:),1,[]));
@@ -62,5 +66,4 @@ function [avg_img_psnr, avg_img_bitrates, img_distortion, img_bitrates, img, img
 
     avg_img_bitrates = mean(img_bitrates, 2);
     avg_img_bitrates = mean(avg_img_bitrates, 3);
-%     avg_img_bitrates = avg_img_bitrates * 30 * frame_width * frame_height / 1000;
 end

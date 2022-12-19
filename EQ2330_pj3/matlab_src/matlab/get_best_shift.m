@@ -1,4 +1,5 @@
 function best_shift = get_best_shift(video, block_size)
+
     shift_vectors = -10:1:10;
     num_of_frames = length(video);
     [frame_height, frame_width] = size(video{1});
@@ -20,7 +21,8 @@ function best_shift = get_best_shift(video, block_size)
                 for dy = 1:length(shift_vectors)
                     shifted_y_start = y_start + shift_vectors(dy);
                     shifted_y_end = y_end + shift_vectors(dy);
-    
+                    
+                    %avoid out of boundary cases 
                     if shifted_y_start < 1 || shifted_y_end > frame_height
                         continue
                     end
@@ -28,11 +30,13 @@ function best_shift = get_best_shift(video, block_size)
                     for dx = 1:length(shift_vectors)
                         shifted_x_start = x_start + shift_vectors(dx);
                         shifted_x_end = x_end + shift_vectors(dx);
-    
+                        
+                        %avoid out of boundary cases 
                         if shifted_x_start < 1 || shifted_x_end > frame_width
                             continue
                         end
-    
+                        
+                        %calculate the distortion
                         shifted_block = video{i - 1}(shifted_y_start:shifted_y_end, shifted_x_start:shifted_x_end);
                         this_mse = mse(curr_block, shifted_block);
     
